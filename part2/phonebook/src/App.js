@@ -1,14 +1,22 @@
 import React, { useState } from 'react'
 
-const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
-  const [newName, setNewName] = useState('a new name...')
-  const [newNumber, setNewNumber] = useState('a new number...')
+const Filter = ({filter, setFilter}) => {
+
+  const handleFilterChange = (event) => {
+    event.preventDefault()
+    setFilter(event.target.value)
+}
+
+  return (
+  <div>
+          <form>
+          filter shown with: <input value={filter} onChange={handleFilterChange} />
+          </form>
+  </div>
+  )
+}
+
+const PersonForm = ({persons, setPersons, newName, setNewName, newNumber, setNewNumber}) => {
 
   const handleNameChange = (event) => {
     event.preventDefault()
@@ -32,32 +40,54 @@ const App = () => {
     }
   }
 
- 
+  return (
+  <form onSubmit={addName}>
+  <div>
+    name: <input value={newName} onChange={handleNameChange}/>
+  </div>
+  <div>
+    number: <input value={newNumber} onChange={handleNumberChange} />
+  </div>
+  <div>
+    <button type="submit">add</button>
+  </div>
+</form>
+  )
+}
+
+const Persons = ({persons, filter}) => {
+  return (
+    <div>
+    {persons
+      .filter(person => person.name.toLowerCase().includes(filter))
+      .map(person => <ul key={person.name}>{person.name} {person.number}</ul>)}
+    </div>
+  )
+}
+
+
+
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ])
+  const [newName, setNewName] = useState('a new name...')
+  const [newNumber, setNewNumber] = useState('a new number...')
+  const [filter, setFilter] = useState('')
 
 
   return (
     <div>
-      <div>debug: {newName}</div>
+      <div>debug: {filter}</div>
       <h2>Phonebook</h2>
-      <form>
-        <div>
-          filter shown with: <input />
-        </div>
+        <Filter filter={filter} setFilter={setFilter} />
         <h3>add a new</h3>
-      </form>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm persons={persons} setPersons={setPersons} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} />
       <h2>Numbers</h2>
-      {persons.map(person => <ul key={person.name}>{person.name} {person.number}</ul>)}
+      <Persons persons={persons} filter={filter} />
     </div>
   )
 }
